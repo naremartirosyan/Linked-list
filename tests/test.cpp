@@ -212,3 +212,119 @@ TEST(Move_Assignment, Self_Assignment)
    ASSERT_EQ(List1.Get(1), 86);
    ASSERT_EQ(List1.GetSize(), 4);
 }
+
+TEST(For_Each, Test0)
+{
+    LinkedList<int> List;
+    List.ForEach([](int& value){value = value * value;});
+    ASSERT_EQ(List.GetSize(), 0);
+}
+
+TEST(For_Each, Square_Test1)
+{
+    LinkedList<int> List1;
+    List1.InsertHead(1);
+   List1.Insert(1, 2);
+   List1.Insert(2, 3);    
+   List1.InsertTail(4);
+    List1.ForEach([](int& value){value = value * value;});
+    ASSERT_EQ(List1.GetSize(), 4);
+    ASSERT_EQ(List1.Get(0), 1);
+    ASSERT_EQ(List1.Get(1), 4);
+    ASSERT_EQ(List1.Get(2), 9);
+    ASSERT_EQ(List1.Get(3), 16);
+}
+
+TEST(For_Each, Remainder_Test1)
+{
+    LinkedList<int> List1;
+    List1.InsertHead(1);
+   List1.Insert(1, 2);
+   List1.Insert(2, 3);    
+   List1.InsertTail(4);
+    List1.ForEach([](int& value){value = value % 4;});
+    ASSERT_EQ(List1.GetSize(), 4);
+    ASSERT_EQ(List1.Get(0), 1);
+    ASSERT_EQ(List1.Get(1), 2);
+    ASSERT_EQ(List1.Get(2), 3);
+    ASSERT_EQ(List1.Get(3), 0);
+}
+
+TEST(Iterator, Begin)
+{
+    LinkedList<int> List1;
+    List1.InsertHead(1);
+   List1.Insert(1, 2);
+   List1.Insert(2, 3);    
+   List1.InsertTail(4);
+    //std::copy(List1.begin(), List1.end(), std::ostream_iterator<int>(std::cout, " "));
+    auto First = List1.begin();
+    ASSERT_EQ(*First, List1.Get(0));
+}
+
+TEST(Iterator, Indirection_Exception)
+{
+    LinkedList<int> List1;
+    auto First = List1.begin();
+    EXPECT_THROW(*First, LinkedList<int>::OutOfRangeException);
+}
+
+TEST(Iterator, Increment)
+{
+    LinkedList<int> List1;
+    List1.InsertHead(1);
+    List1.Insert(1, 123);
+    auto First = List1.begin();
+    ++First;
+    ASSERT_EQ(*First, List1.Get(1));
+}
+
+TEST(Iterator, Increment_Exception)
+{
+    LinkedList<int> List1;
+    auto First = List1.begin();
+    EXPECT_THROW(++First, LinkedList<int>::OutOfRangeException);
+}
+
+TEST(Iterator, Indirection_Write)
+{
+    LinkedList<int> List1;
+    List1.InsertHead(1);
+    auto First = List1.begin();
+    *First = 2;
+    ASSERT_EQ(*First, 2);
+}
+
+TEST(Iterator, End)
+{
+    LinkedList<int> List1;
+    auto First = List1.end();
+    EXPECT_THROW(*First, LinkedList<int>::OutOfRangeException);
+}
+
+TEST(Iterator, For_Get)
+{
+    LinkedList<int> List1;
+    List1.InsertHead(1);
+    List1.Insert(1, 2);
+    List1.Insert(2, 3);    
+    List1.InsertTail(4);
+    auto Iterator = List1.begin();
+    int i = 0;
+    while(Iterator != List1.end())
+    {
+        ASSERT_EQ(List1.Get(i), *Iterator);
+        ++Iterator;
+        i++;
+    }
+}
+
+TEST(Iterator, Copy)
+{
+    LinkedList<int> List1;
+    List1.InsertHead(1);
+   List1.Insert(1, 2);
+   List1.Insert(2, 3);    
+   List1.InsertTail(4);
+    std::copy(List1.begin(), List1.end(), std::ostream_iterator<int>(std::cout, " "));
+}

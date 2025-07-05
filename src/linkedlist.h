@@ -14,24 +14,90 @@ class LinkedList
    Node<T>* Head = nullptr;
    int ElementCount = 0;
 public:
+   class Iterator
+   {
+      Node<T>* ptr;
+   public:
+      using iterator_category = std::forward_iterator_tag;
+      using difference_type   = int;
+      using value_type        = T;
+      using pointer           = T*;  
+      using reference         = T&;
+
+      Iterator(Node<T>* ptr)
+      {
+         this->ptr = ptr;
+      }
+
+      T operator *() const
+      {
+         if(this->ptr == nullptr)
+         {
+            throw(LinkedList::OutOfRangeException("No elements there."));
+         }
+         return this->ptr->Value;
+      }  
+
+      T& operator *() 
+      {
+         if(this->ptr == nullptr)
+         {
+            throw(LinkedList::OutOfRangeException("No elements there."));
+         }
+         return this->ptr->Value;;
+      } 
+
+      Iterator& operator ++()
+      {
+         if(this->ptr == nullptr)
+            {
+               throw(LinkedList::OutOfRangeException("No elements there."));
+            }
+         this->ptr = this->ptr->Pointer;
+         return *this;
+      }
+
+      bool operator !=(const Iterator& other) 
+      {
+         if(this->ptr == other.ptr)
+         {
+            return false;
+         }
+         else
+         {
+            return true;
+         }
+      }
+
+   };
+
+   Iterator begin()
+   {
+      Iterator Start(Head);
+      return Start;
+   }
+   Iterator end()
+   {
+      Iterator End(nullptr);
+      return End;
+   }
    void InsertHead(T value);
    void Insert(int position, T value);
    void InsertTail(T value);
    void Remove(int position);
    T Get(int position) const;
+   void ForEach(std::function<void(T&)> lambda);
    int GetSize() const
    {
       return ElementCount;
    }
 
-   //Constructor
    LinkedList() 
    {
       Head = nullptr;
       ElementCount = 0;
    }
 
-   //Copy Constructor
    LinkedList(const LinkedList<T>& other) 
    {
       for(int i = 0; i < other.ElementCount; i++)
@@ -40,14 +106,12 @@ public:
       }  
    }
 
-   //Move Contructor
    LinkedList(LinkedList<T>&& other) 
    {
       std::swap(other.Head, this->Head);
       std::swap(other.ElementCount, this->ElementCount);
    }
 
-   //Destructor
    ~LinkedList()
    {
       Node<T>* ptr1 = Head;
@@ -67,7 +131,6 @@ public:
       }
    }
    
-   //= Operator
    LinkedList& operator =(const LinkedList<T>& other)
    {
       /*for(int i = 0; i < this->ElementCount; i++)
@@ -86,7 +149,6 @@ public:
       return *this;  
    }
 
-   //Move =
    LinkedList& operator =(LinkedList<T>&& other)
    {
       LinkedList<T> tmp(std::move(other));
@@ -194,3 +256,13 @@ void LinkedList<T>::Remove(int position)
    ElementCount--;
 }
 
+template <typename T> 
+void LinkedList<T>::ForEach(std::function<void(T&)> lambda)
+{
+   Node<T>* ptr = Head;
+   while(ptr != nullptr)
+   {
+      lambda(ptr->Value);
+      ptr = ptr->Pointer;
+   }
+}
